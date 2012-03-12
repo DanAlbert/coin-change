@@ -44,24 +44,26 @@ public class CoinChange
 		int[][] change = new int[target + 1][coins.length];
 		int[] nCoins = new int[target + 1];
 		
-		nCoins[0] = 0;
+		for (int i = 0; i < coins.length; i++)
+		{
+			change[0][i] = 0;
+		}
+		
 		for (int i = 1; i <= target; i++)
 		{
-			int[] vals = new int[coins.length];
 			for (int j = 0; j < coins.length; j++)
 			{
 				if (coins[j] <= i)
 				{
-					vals[j] = nCoins[i - coins[j]] + 1;
+					change[i][j] = change[i - coins[j]][j] + 1;
 				}
 				else
 				{
-					vals[j] = Integer.MAX_VALUE;
+					change[i][j] = Integer.MAX_VALUE;
 				}
 			}
 			
-			nCoins[i] = minimum(vals);
-			change[i][minLoc(vals)]++;
+			nCoins[i] = minimum(change[i]);
 		}
 		
 		return change[target];
