@@ -1,9 +1,3 @@
-
-
-/**
- * 
- */
-
 /**
  * @author Dan Albert
  *
@@ -41,7 +35,7 @@ public class CoinChange
 	
 	public static int[] changeDp(int[] coins, int target) throws Exception
 	{
-		int[][] change = new int[target + 1][coins.length];
+		Integer[][] change = new Integer[target + 1][coins.length];
 		int[] nCoins = new int[target + 1];
 		
 		for (int i = 0; i < coins.length; i++)
@@ -55,18 +49,35 @@ public class CoinChange
 			{
 				if (coins[j] <= i)
 				{
-					change[i][j] = change[i - coins[j]][j] + 1;
+					int offset = 0;
+					Integer lastVal;
+					
+					do
+					{
+						lastVal = change[i][j] = change[i - coins[j]][j - offset];
+						offset++;
+					} while (lastVal == null);
+					
+					change[i][j] = lastVal + 1;
 				}
 				else
 				{
-					change[i][j] = Integer.MAX_VALUE;
+					change[i][j] = null;
 				}
 			}
 			
 			nCoins[i] = minimum(change[i]);
 		}
 		
-		return change[target];
+		int[] result = new int[coins.length];
+		while (target > 0)
+		{
+			Integer minLoc = minLoc(change[target]);
+			result[minLoc]++;
+			target -= coins[minLoc];
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -84,7 +95,6 @@ public class CoinChange
 		{
 			//System.out.println(arrayToString(changeGreedy(coins, target)));
 			System.out.println(arrayToString(changeDp(coins, target)));
-			//System.out.println(changeDp(coins, target));
 		}
 		catch (Exception e)
 		{
@@ -111,12 +121,12 @@ public class CoinChange
 		return output;
 	}
 	
-	public static int minimum(int[] list)
+	public static int minimum(Integer[] list)
 	{
 		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < list.length; i++)
 		{
-			if (list[i] < min)
+			if ((list[i] != null) && (list[i] < min))
 			{
 				min = list[i];
 			}
@@ -125,13 +135,13 @@ public class CoinChange
 		return min;
 	}
 	
-	public static int minLoc(int[] list)
+	public static int minLoc(Integer[] list)
 	{
 		int index = 0;
 		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < list.length; i++)
 		{
-			if (list[i] < min)
+			if ((list[i] != null) && (list[i] < min))
 			{
 				min = list[i];
 				index = i;
